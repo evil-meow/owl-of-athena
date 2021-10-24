@@ -6,7 +6,7 @@ The bot that helps me to deploy pet projects
 
 ## Deployment
 
-The deployment needs to provide thefollowing variables
+The deployment needs to provide the following variables
 
 ```
 SLACK_AUTH_TOKEN
