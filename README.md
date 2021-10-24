@@ -21,8 +21,8 @@ GITHUB_TOKEN
 
 - [x] Command to create a new service
 - [x] Add CI
-- [ ] Add this repo's infra to ArgoCD
 - [ ] Auto create infra repository with base and production if not there already
+- [ ] Add this repo's infra to ArgoCD
 
 ### v0.2
 
