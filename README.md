@@ -23,14 +23,20 @@ GITHUB_TOKEN
 - [x] Add CI
 - [ ] Add this repo's infra to ArgoCD
 - [ ] Auto create infra repository with base and production if not there already
+
+### v0.2
+
 - [ ] Add target repository to ArgoCD
-- [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret
+- [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
+
+### v0.3
+
 - [ ] Notify deployments in Slack?
-- [ ] A way to apply base to new environments
-- [ ] Create Sentry entry
-- [ ] Push dashboards to grafana
+- [ ] Warn if failed deployment
 
 ### v1.0
 
 - [ ] API to create new services from owlgithub.com
+- [ ] Create Sentry entry
+- [ ] Push dashboards to grafana
 - [ ] Links to relevant pages in external services in owlgithub.com
