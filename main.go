@@ -23,7 +23,6 @@ func main() {
 	socketClient := socketmode.New(
 		client,
 		socketmode.OptionDebug(true),
-		// Option to set a custom logger
 		socketmode.OptionLog(log.New(os.Stdout, "socketmode: ", log.Lshortfile|log.LstdFlags)),
 	)
 

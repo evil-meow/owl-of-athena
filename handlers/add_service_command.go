@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"evil-meow/owl-of-athena/github_api"
 	"fmt"
 	"time"
 
@@ -23,13 +24,22 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		},
 	}
 
+	serviceName := command.Text
+
 	// Acknowledge that the request was received
-	attachment.Text = fmt.Sprintf("Adding the service at %s", command.Text)
+	attachment.Text = fmt.Sprintf("Adding the service at %s", serviceName)
 	attachment.Color = "#4af030"
 
 	_, _, err := client.PostMessage(command.ChannelID, slack.MsgOptionAttachments(attachment))
 	if err != nil {
 		return fmt.Errorf("failed to post message: %w", err)
 	}
+
+	if github_api.IsGithubRepoCreated(serviceName) {
+		fmt.Sprintf("Repo %s exists", serviceName)
+	} else {
+		fmt.Sprintf("Repo %s does not exist", serviceName)
+	}
+
 	return nil
 }
