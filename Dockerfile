@@ -11,8 +11,9 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-COPY *.go ./
+ADD . ./
 
+RUN go get
 RUN go build -o /owl-of-athena
 
 ##
