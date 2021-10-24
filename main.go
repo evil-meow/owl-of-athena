@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"evil-meow/owl-of-athena/handlers"
+	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/slack-go/slack"
 	"github.com/slack-go/slack/slackevents"
@@ -61,6 +63,22 @@ func main() {
 						// Replace with actual err handeling
 						log.Fatal(err)
 					}
+					// Handle Slash Commands
+				case socketmode.EventTypeSlashCommand:
+					// Just like before, type cast to the correct event type, this time a SlashEvent
+					command, ok := event.Data.(slack.SlashCommand)
+					if !ok {
+						log.Printf("Could not type cast the message to a SlashCommand: %v\n", command)
+						continue
+					}
+					// Dont forget to acknowledge the request
+					socketClient.Ack(*event.Request)
+					// handleSlashCommand will take care of the command
+					err := handleSlashCommand(command, client)
+					if err != nil {
+						log.Fatal(err)
+					}
+
 				}
 
 			}
@@ -88,6 +106,47 @@ func handleEventMessage(event slackevents.EventsAPIEvent, client *slack.Client) 
 		}
 	default:
 		return errors.New("unsupported event type")
+	}
+	return nil
+}
+
+// handleSlashCommand will take a slash command and route to the appropriate function
+func handleSlashCommand(command slack.SlashCommand, client *slack.Client) error {
+	// We need to switch depending on the command
+	switch command.Command {
+	case "/add_service":
+		// This was a hello command, so pass it along to the proper function
+		return handleHelloCommand(command, client)
+	}
+
+	return nil
+}
+
+// handleHelloCommand will take care of /hello submissions
+func handleHelloCommand(command slack.SlashCommand, client *slack.Client) error {
+	// The Input is found in the text field so
+	// Create the attachment and assigned based on the message
+	attachment := slack.Attachment{}
+	// Add Some default context like user who mentioned the bot
+	attachment.Fields = []slack.AttachmentField{
+		{
+			Title: "Date",
+			Value: time.Now().String(),
+		}, {
+			Title: "Initializer",
+			Value: command.UserName,
+		},
+	}
+
+	// Greet the user
+	attachment.Text = fmt.Sprintf("Hello %s", command.Text)
+	attachment.Color = "#4af030"
+
+	// Send the message to the channel
+	// The Channel is available in the command.ChannelID
+	_, _, err := client.PostMessage(command.ChannelID, slack.MsgOptionAttachments(attachment))
+	if err != nil {
+		return fmt.Errorf("failed to post message: %w", err)
 	}
 	return nil
 }
