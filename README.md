@@ -1,6 +1,6 @@
 # Owl of athena
 
-![build status](https://github.com/evil-meow/owl-of-athena/actions/workflows/publish-image/badge.svg)
+![build status](https://github.com/evil-meow/owl-of-athena/actions/workflows/publish-image.yml/badge.svg)
 
 The bot that helps me to deploy pet projects
 
