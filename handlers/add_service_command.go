@@ -3,6 +3,7 @@ package handlers
 import (
 	"evil-meow/owl-of-athena/github_api"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/slack-go/slack"
@@ -10,10 +11,11 @@ import (
 
 // handleHelloCommand will take care of /add_service submissions
 func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) error {
-
 	serviceName := &command.Text
 	username := &command.UserName
 	channelID := &command.ChannelID
+
+	log.Printf("Adding service %s...", *serviceName)
 
 	sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Adding the service at %s", *serviceName))
 
@@ -23,7 +25,11 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Repo %s does not exist. Please, specify an existing repo.", *serviceName))
 	}
 
-	// Check if config file exists
+	_, err := readConfigFile(serviceName)
+	if err != nil {
+		sendMessage(client, username, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
+		return err
+	}
 
 	infraRepoName := *serviceName + "-infra"
 
@@ -58,6 +64,17 @@ func sendMessage(client *slack.Client, username *string, channelID *string, serv
 
 	_, _, err := client.PostMessage(*channelID, slack.MsgOptionAttachments(attachment))
 	if err != nil {
-		fmt.Errorf("failed to post message: %w", err)
+		log.Printf("failed to post message: %w", err)
 	}
+}
+
+func readConfigFile(serviceName *string) (string, error) {
+	configFileUrl := fmt.Sprintf("https://raw.github.com/evil-meow/%s/main/owl.yml", *serviceName)
+	configFile, err := github_api.ReadFile(&configFileUrl)
+	if err != nil {
+		log.Printf("Could not find config file at: %s", configFileUrl)
+		return "", err
+	}
+
+	return string(configFile), nil
 }
