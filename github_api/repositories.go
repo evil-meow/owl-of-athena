@@ -30,14 +30,8 @@ func CreateGitubRepo(name *string) {
 
 func IsGithubRepoCreated(name string) bool {
 	client, ctx := getClient()
-	repo, _, err := client.Repositories.Get(*ctx, "evil-meow", name)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("Repo %v exists\n", repo.GetName())
-
-	return true
+	_, _, err := client.Repositories.Get(*ctx, "evil-meow", name)
+	return err != nil
 }
 
 func getClient() (*github.Client, *context.Context) {
