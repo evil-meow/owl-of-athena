@@ -15,16 +15,22 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 	username := &command.UserName
 	channelID := &command.ChannelID
 
-	sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Adding the service at %s", serviceName))
+	sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Adding the service at %s", *serviceName))
 
 	if github_api.IsGithubRepoCreated(*serviceName) {
-		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Repo %s exists. I won't do anything.", serviceName))
-		return nil
+		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Repo %s exists", *serviceName))
 	} else {
-		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Repo %s does not exist. Creating.", serviceName))
-		github_api.CreateGitubRepo(serviceName)
+		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Repo %s does not exist. Please, specify an existing repo.", *serviceName))
 	}
 
+	infraRepoName := *serviceName + "-infra"
+
+	if github_api.IsGithubRepoCreated(infraRepoName) {
+		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Infra repo %s already exists", infraRepoName))
+	} else {
+		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Infra repo %s does not exist. Creating.", infraRepoName))
+		github_api.CreateGitubRepo(&infraRepoName)
+	}
 	return nil
 }
 
