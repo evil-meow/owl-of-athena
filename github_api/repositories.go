@@ -2,7 +2,6 @@ package github_api
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
@@ -25,7 +24,7 @@ func CreateGitubRepo(name *string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Successfully created new repo: %v\n", repo.GetName())
+	log.Printf("Successfully created new repo: %v\n", repo.GetName())
 }
 
 func IsGithubRepoCreated(name string) bool {
