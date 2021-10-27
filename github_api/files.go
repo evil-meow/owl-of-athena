@@ -1,6 +1,8 @@
 package github_api
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -30,6 +32,10 @@ func ReadFile(fileUrl *string) (string, error) {
 	configFile, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", nil
+	}
+
+	if resp.StatusCode != 200 {
+		return "", errors.New(fmt.Sprintf("Wrong status code received %s:\n%s", resp.Status, resp.Body))
 	}
 
 	return string(configFile), nil
