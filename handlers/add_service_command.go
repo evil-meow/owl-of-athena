@@ -4,7 +4,6 @@ import (
 	"evil-meow/owl-of-athena/github_api"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/slack-go/slack"
 )
@@ -17,43 +16,37 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 
 	log.Printf("Adding service %s...", *serviceName)
 
-	sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Adding the service at %s", *serviceName))
+	sendMessage(client, channelID, serviceName, fmt.Sprintf("%s requested adding the service %s", *username, *serviceName))
 
 	if github_api.IsGithubRepoCreated(*serviceName) {
-		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Repo %s exists", *serviceName))
+		sendMessage(client, channelID, serviceName, fmt.Sprintf("Repo %s exists", *serviceName))
 	} else {
-		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Repo %s does not exist. Please, specify an existing repo.", *serviceName))
+		sendMessage(client, channelID, serviceName, fmt.Sprintf("Repo http://github.com/evil-meow/%s does not exist. Please, specify an existing repo.", *serviceName))
 	}
 
 	_, err := readConfigFile(serviceName)
 	if err != nil {
-		sendMessage(client, username, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
+		sendMessage(client, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
 		return err
 	}
 
 	infraRepoName := *serviceName + "-infra"
 
 	if github_api.IsGithubRepoCreated(infraRepoName) {
-		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Infra repo %s already exists", infraRepoName))
+		sendMessage(client, channelID, serviceName, fmt.Sprintf("Infra repo %s already exists", infraRepoName))
 	} else {
-		sendMessage(client, username, channelID, serviceName, fmt.Sprintf("Infra repo %s does not exist. Creating.", infraRepoName))
+		sendMessage(client, channelID, serviceName, fmt.Sprintf("Infra repo %s does not exist. Creating.", infraRepoName))
 		github_api.CreateGitubRepo(&infraRepoName)
 	}
 
 	return nil
 }
 
-func sendMessage(client *slack.Client, username *string, channelID *string, serviceName *string, text string) {
+func sendMessage(client *slack.Client, channelID *string, serviceName *string, text string) {
 	attachment := slack.Attachment{}
 
 	attachment.Fields = []slack.AttachmentField{
 		{
-			Title: "Date",
-			Value: time.Now().String(),
-		}, {
-			Title: "Initializer",
-			Value: *username,
-		}, {
 			Title: "Service",
 			Value: *serviceName,
 		},
