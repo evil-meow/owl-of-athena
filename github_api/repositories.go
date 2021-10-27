@@ -29,9 +29,8 @@ func CreateGitubRepo(name *string) {
 
 func IsGithubRepoCreated(name string) bool {
 	client, ctx := getClient()
-	repo, _, err := client.Repositories.Get(*ctx, "evil-meow", name)
-	log.Printf("Found repo %+v\n\terror %+v", repo, err)
-	return err != nil
+	_, _, err := client.Repositories.Get(*ctx, "evil-meow", name)
+	return err == nil
 }
 
 func getClient() (*github.Client, *context.Context) {
