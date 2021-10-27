@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"evil-meow/owl-of-athena/github_api"
 	"fmt"
 	"log"
@@ -22,6 +23,7 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		sendMessage(client, channelID, serviceName, fmt.Sprintf("Repo %s exists", *serviceName))
 	} else {
 		sendMessage(client, channelID, serviceName, fmt.Sprintf("Repo http://github.com/evil-meow/%s does not exist. Please, specify an existing repo.", *serviceName))
+		return errors.New("Base repo not found")
 	}
 
 	_, err := readConfigFile(serviceName)
