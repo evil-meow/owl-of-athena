@@ -16,7 +16,9 @@ func CreateGitubRepo(name *string) {
 	isPrivate := true
 	description := "Repo created by owl-of-athena"
 
-	r := &github.Repository{Name: name, Private: &isPrivate, Description: &description}
+	autoInit := true
+
+	r := &github.Repository{Name: name, Private: &isPrivate, Description: &description, AutoInit: &autoInit}
 	repo, _, err := client.Repositories.Create(*ctx, "evil-meow", r)
 	if err != nil {
 		log.Fatal(err)

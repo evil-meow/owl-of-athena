@@ -90,7 +90,7 @@ func readConfigFile(serviceName *string) (*config.Config, error) {
 func commitReadme(repoName *string) error {
 	ref, err := github_api.GetMainRef(repoName)
 	if err != nil {
-		return err
+		return fmt.Errorf("error retrieving or creating main branch:\n%v", err)
 	}
 
 	files := github_api.FilesToCommit{
