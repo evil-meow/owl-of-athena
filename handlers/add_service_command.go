@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"errors"
+	"evil-meow/owl-of-athena/config"
 	"evil-meow/owl-of-athena/github_api"
 	"fmt"
 	"log"
 
 	"github.com/slack-go/slack"
+	"gopkg.in/yaml.v2"
 )
 
 // handleHelloCommand will take care of /add_service submissions
@@ -29,7 +31,7 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 	_, err := readConfigFile(serviceName)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
-		return errors.New("no owl.yml found")
+		return err
 	}
 
 	infraRepoName := *serviceName + "-infra"
@@ -39,6 +41,12 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 	} else {
 		sendMessage(client, channelID, serviceName, fmt.Sprintf("Infra repo %s does not exist. Creating.", infraRepoName))
 		github_api.CreateGitubRepo(&infraRepoName)
+	}
+
+	err = commitReadme(&infraRepoName)
+	if err != nil {
+		sendMessage(client, channelID, serviceName, "Could not commit README to the infra repo")
+		return err
 	}
 
 	return nil
@@ -59,19 +67,42 @@ func sendMessage(client *slack.Client, channelID *string, serviceName *string, t
 
 	_, _, err := client.PostMessage(*channelID, slack.MsgOptionAttachments(attachment))
 	if err != nil {
-		log.Printf("failed to post message: %w", err)
+		log.Printf("failed to post message: %v", err)
 	}
 }
 
-func readConfigFile(serviceName *string) (string, error) {
-	configFileUrl := fmt.Sprintf("https://raw.github.com/evil-meow/%s/main/owl.yml", *serviceName)
+func readConfigFile(serviceName *string) (*config.Config, error) {
+	configFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/main/owl.yml", *serviceName)
 	configFile, err := github_api.ReadFile(&configFileUrl)
 	if err != nil {
 		log.Printf("Could not find config file at: %s", configFileUrl)
-		return "", err
+		return nil, errors.New("owl.yml file not found")
 	}
 
 	log.Printf("owl.yml found. Contents:\n%s", configFile)
 
-	return string(configFile), nil
+	conf := config.Config{}
+
+	yaml.Unmarshal([]byte(configFile), &conf)
+	return &conf, nil
+}
+
+func commitReadme(repoName *string) error {
+	ref, err := github_api.GetMainRef(repoName)
+	if err != nil {
+		return err
+	}
+
+	files := github_api.FilesToCommit{
+		Files: []github_api.FileToCommit{
+			{
+				FilePath: "README.md",
+				Content:  "Repo created by owl-of-athena",
+			},
+		},
+	}
+
+	_, err = github_api.CommitFilesToMain(repoName, files, ref)
+
+	return err
 }

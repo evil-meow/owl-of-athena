@@ -1,12 +1,9 @@
 package github_api
 
 import (
-	"context"
 	"log"
-	"os"
 
 	"github.com/google/go-github/v39/github"
-	"golang.org/x/oauth2"
 )
 
 func CreateGitubRepo(name *string) {
@@ -14,7 +11,7 @@ func CreateGitubRepo(name *string) {
 		log.Fatal("No name: New repos must be given a name")
 	}
 
-	client, ctx := getClient()
+	client, ctx := GetClient()
 
 	isPrivate := true
 	description := "Repo created by owl-of-athena"
@@ -28,19 +25,7 @@ func CreateGitubRepo(name *string) {
 }
 
 func IsGithubRepoCreated(name string) bool {
-	client, ctx := getClient()
+	client, ctx := GetClient()
 	_, _, err := client.Repositories.Get(*ctx, "evil-meow", name)
 	return err == nil
-}
-
-func getClient() (*github.Client, *context.Context) {
-	token := os.Getenv("GITHUB_AUTH_TOKEN")
-	if token == "" {
-		log.Fatal("Unauthorized: No token present")
-	}
-
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
-	tc := oauth2.NewClient(ctx, ts)
-	return github.NewClient(tc), &ctx
 }

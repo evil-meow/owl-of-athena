@@ -1,12 +1,21 @@
 package github_api
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+
+	"github.com/google/go-github/v39/github"
 )
+
+type FilesToCommit struct {
+	Files []FileToCommit
+}
+
+type FileToCommit struct {
+	FilePath string
+	Content  string
+}
 
 func ReadFile(fileUrl *string) (string, error) {
 	req, err := http.NewRequest("GET", *fileUrl, nil)
@@ -14,18 +23,12 @@ func ReadFile(fileUrl *string) (string, error) {
 		return "", err
 	}
 
-	req.Header.Set("Accept", "application/text")
+	client, _ := GetClient()
 
-	httpClient := &http.Client{}
-	resp, err := httpClient.Do(req)
+	resp, err := client.Client().Do(req)
 	if err != nil {
 		return "", err
 	}
-
-	token := os.Getenv("GITHUB_AUTH_TOKEN")
-	q := req.URL.Query()
-	q.Add("token", token)
-	req.URL.RawQuery = q.Encode()
 
 	defer resp.Body.Close()
 
@@ -35,8 +38,23 @@ func ReadFile(fileUrl *string) (string, error) {
 	}
 
 	if resp.StatusCode != 200 {
-		return "", errors.New(fmt.Sprintf("Wrong status code received %s:\n%s", resp.Status, resp.Body))
+		return "", fmt.Errorf("wrong status code received %s:\n%s", resp.Status, resp.Body)
 	}
 
 	return string(configFile), nil
+}
+
+// Commits the array of files sent to the github repo
+func CommitFilesToMain(sourceRepo *string, files FilesToCommit, ref *github.Reference) (tree *github.Tree, err error) {
+	client, ctx := GetClient()
+
+	entries := []*github.TreeEntry{}
+
+	// Load each file into the tree.
+	for _, file := range files.Files {
+		entries = append(entries, &github.TreeEntry{Path: github.String(file.FilePath), Type: github.String("blob"), Content: github.String(file.Content), Mode: github.String("100644")})
+	}
+
+	tree, _, err = client.Git.CreateTree(*ctx, "owl-of-athena", *sourceRepo, *ref.Object.SHA, entries)
+	return tree, err
 }
