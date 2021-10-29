@@ -23,13 +23,13 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		sendMessage(client, channelID, serviceName, fmt.Sprintf("Repo %s exists", *serviceName))
 	} else {
 		sendMessage(client, channelID, serviceName, fmt.Sprintf("Repo http://github.com/evil-meow/%s does not exist. Please, specify an existing repo.", *serviceName))
-		return errors.New("Base repo not found")
+		return errors.New("base repo not found")
 	}
 
 	_, err := readConfigFile(serviceName)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
-		return errors.New("No owl.yml found")
+		return errors.New("no owl.yml found")
 	}
 
 	infraRepoName := *serviceName + "-infra"
