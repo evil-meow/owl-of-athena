@@ -2,8 +2,8 @@ package config
 
 type Config struct {
 	Version  string `yaml:"version"`
-	Services []struct {
-		image string `yaml:"image"`
-		url   string `yaml:"url"`
-	} `yaml:"services"`
+	Name     string `yaml:"name"`
+	Replicas int8   `yaml:"replicas"`
+	Image    string `yaml:"image"`
+	Url      string `yaml:"url"`
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"evil-meow/owl-of-athena/config"
 	"evil-meow/owl-of-athena/github_api"
+	"evil-meow/owl-of-athena/k8s"
 	"fmt"
 	"log"
 
@@ -28,7 +29,7 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return errors.New("base repo not found")
 	}
 
-	_, err := readConfigFile(serviceName)
+	config, err := readConfigFile(serviceName)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
 		return err
@@ -46,6 +47,12 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 	err = commitReadme(&infraRepoName)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit README to the infra repo")
+		return err
+	}
+
+	err = commitK8sDescriptors(&infraRepoName, config)
+	if err != nil {
+		sendMessage(client, channelID, serviceName, "Could not commit k8s descriptors to the infra repo")
 		return err
 	}
 
@@ -98,6 +105,62 @@ func commitReadme(repoName *string) error {
 	}
 
 	err := github_api.CommitFilesToMain(repoName, files)
+
+	return err
+}
+
+func commitK8sDescriptors(repoName *string, config *config.Config) error {
+	deploymentYaml, err := k8s.BuildDeploymentYaml(config)
+	if err != nil {
+		return err
+	}
+
+	namespaceYaml, err := k8s.BuildNamespaceYaml(config)
+	if err != nil {
+		return err
+	}
+
+	kustomizeYaml, err := k8s.BuildKustomizeYaml(config)
+	if err != nil {
+		return err
+	}
+
+	kustomizeProdYaml, err := k8s.BuildKustomizeProdYaml(config)
+	if err != nil {
+		return err
+	}
+
+	secretsProdYaml, err := k8s.BuildSecretsProdYaml(config)
+	if err != nil {
+		return err
+	}
+
+	files := github_api.FilesToCommit{
+		Files: []github_api.FileToCommit{
+			{
+				FilePath: "base/deployment.yaml",
+				Content:  deploymentYaml,
+			},
+			{
+				FilePath: "base/namespace.yaml",
+				Content:  namespaceYaml,
+			},
+			{
+				FilePath: "base/kustomize.yaml",
+				Content:  kustomizeYaml,
+			},
+			{
+				FilePath: "overlays/production/kustomize.yaml",
+				Content:  kustomizeProdYaml,
+			},
+			{
+				FilePath: "overlays/production/deployment-secrets.yaml",
+				Content:  secretsProdYaml,
+			},
+		},
+	}
+
+	err = github_api.CommitFilesToMain(repoName, files)
 
 	return err
 }
