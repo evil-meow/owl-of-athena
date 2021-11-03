@@ -4,6 +4,23 @@
 
 The bot that helps me to deploy pet projects
 
+## Usage
+
+Place a yml file at the root of the project and ping the bot with
+
+```
+/add_service repo-name
+```
+
+The yml needs to have the following format
+
+```
+version: 1
+images:
+  - name: image-name
+    url: <url-to-expose> (optional)
+```
+
 ## Deployment
 
 The deployment needs to provide the following variables
@@ -22,17 +39,16 @@ GITHUB_TOKEN
 - [x] Command to create a new service
 - [x] Add CI
 - [ ] Auto create infra repository with base and production if not there already
-- [ ] Add this repo's infra to ArgoCD
+- [ ] Add this repo's infra to ArgoCD using declarative syntax
 
 ### v0.2
 
-- [ ] Add target repository to ArgoCD
 - [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
 
 ### v0.3
 
-- [ ] Notify deployments in Slack?
-- [ ] Warn if failed deployment
+- [ ] Notify failed deployments in Slack
+- [ ] Notify failed builds in Slack
 
 ### v1.0
 

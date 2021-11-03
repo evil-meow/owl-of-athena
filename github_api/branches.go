@@ -1,18 +1,18 @@
 package github_api
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/google/go-github/v39/github"
 )
 
 // Gets the main branch of a repository or creates it if not there
-func GetMainRef(sourceRepo *string) (ref *github.Reference, err error) {
-	client, ctx := GetClient()
-
-	if ref, _, err = client.Git.GetRef(*ctx, "owl-of-athena", *sourceRepo, "refs/heads/main"); err == nil {
-		return ref, nil
+func GetMainRef(client *github.Client, ctx *context.Context, sourceRepo *string) (ref *github.Reference, err error) {
+	ref, _, err = client.Git.GetRef(*ctx, "evil-meow", *sourceRepo, "refs/heads/main")
+	if err != nil {
+		return nil, fmt.Errorf("error finding main branch: %v", err)
 	}
 
-	newRef := &github.Reference{Ref: github.String("refs/heads/main"), Object: &github.GitObject{}}
-	ref, _, err = client.Git.CreateRef(*ctx, "owl-of-athena", *sourceRepo, newRef)
 	return ref, err
 }

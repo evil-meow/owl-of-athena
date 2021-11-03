@@ -88,11 +88,6 @@ func readConfigFile(serviceName *string) (*config.Config, error) {
 }
 
 func commitReadme(repoName *string) error {
-	ref, err := github_api.GetMainRef(repoName)
-	if err != nil {
-		return fmt.Errorf("error retrieving or creating main branch:\n%v", err)
-	}
-
 	files := github_api.FilesToCommit{
 		Files: []github_api.FileToCommit{
 			{
@@ -102,7 +97,7 @@ func commitReadme(repoName *string) error {
 		},
 	}
 
-	_, err = github_api.CommitFilesToMain(repoName, files, ref)
+	err := github_api.CommitFilesToMain(repoName, files)
 
 	return err
 }

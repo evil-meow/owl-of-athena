@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/google/go-github/v39/github"
 )
@@ -45,7 +46,7 @@ func ReadFile(fileUrl *string) (string, error) {
 }
 
 // Commits the array of files sent to the github repo
-func CommitFilesToMain(sourceRepo *string, files FilesToCommit, ref *github.Reference) (tree *github.Tree, err error) {
+func CommitFilesToMain(sourceRepo *string, files FilesToCommit) error {
 	client, ctx := GetClient()
 
 	entries := []*github.TreeEntry{}
@@ -55,6 +56,41 @@ func CommitFilesToMain(sourceRepo *string, files FilesToCommit, ref *github.Refe
 		entries = append(entries, &github.TreeEntry{Path: github.String(file.FilePath), Type: github.String("blob"), Content: github.String(file.Content), Mode: github.String("100644")})
 	}
 
-	tree, _, err = client.Git.CreateTree(*ctx, "owl-of-athena", *sourceRepo, *ref.Object.SHA, entries)
-	return tree, err
+	main, err := GetMainRef(client, ctx, sourceRepo)
+	if err != nil {
+		return err
+	}
+
+	tree, _, err := client.Git.CreateTree(*ctx, "evil-meow", *sourceRepo, *main.Object.SHA, entries)
+	if err != nil {
+		return err
+	}
+
+	parent, _, err := client.Repositories.GetCommit(*ctx, "evil-meow", *sourceRepo, *main.Object.SHA, nil)
+	if err != nil {
+		return err
+	}
+	// This is not always populated, but is needed.
+	parent.Commit.SHA = parent.SHA
+
+	author_name := "owl-of-athena"
+	author_email := "owl-of-athena@evilmeow.com"
+	commit_message := "Automated commit"
+
+	date := time.Now()
+	author := &github.CommitAuthor{Date: &date, Name: &author_name, Email: &author_email}
+	commit := &github.Commit{Author: author, Message: &commit_message, Tree: tree, Parents: []*github.Commit{parent.Commit}}
+	newCommit, _, err := client.Git.CreateCommit(*ctx, "evil-meow", *sourceRepo, commit)
+	if err != nil {
+		return err
+	}
+
+	// Attach the commit to the master branch.
+	main.Object.SHA = newCommit.SHA
+	_, _, err = client.Git.UpdateRef(*ctx, "evil-meow", *sourceRepo, main, false)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
