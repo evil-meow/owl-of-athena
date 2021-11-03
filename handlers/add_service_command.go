@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"evil-meow/owl-of-athena/argocd"
 	"evil-meow/owl-of-athena/config"
 	"evil-meow/owl-of-athena/github_api"
 	"evil-meow/owl-of-athena/k8s"
@@ -56,6 +57,12 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return err
 	}
 
+	err = commitArgocd(&infraRepoName, config)
+	if err != nil {
+		sendMessage(client, channelID, serviceName, "Could not commit argocd descriptor")
+		return err
+	}
+
 	return nil
 }
 
@@ -91,6 +98,8 @@ func readConfigFile(serviceName *string) (*config.Config, error) {
 	conf := config.Config{}
 
 	yaml.Unmarshal([]byte(configFile), &conf)
+	conf.RepoName = *serviceName
+
 	return &conf, nil
 }
 
@@ -183,6 +192,26 @@ func commitK8sDescriptors(repoName *string, config *config.Config) error {
 			{
 				FilePath: "overlays/production/virtual-service.yaml",
 				Content:  virtualServiceProdYaml,
+			},
+		},
+	}
+
+	err = github_api.CommitFilesToMain(repoName, files)
+
+	return err
+}
+
+func commitArgocd(repoName *string, config *config.Config) error {
+	argoYaml, err := argocd.BuildApplicationYaml(config)
+	if err != nil {
+		return err
+	}
+
+	files := github_api.FilesToCommit{
+		Files: []github_api.FileToCommit{
+			{
+				FilePath: "argocd.yaml",
+				Content:  argoYaml,
 			},
 		},
 	}
