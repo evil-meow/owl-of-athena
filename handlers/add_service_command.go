@@ -135,6 +135,21 @@ func commitK8sDescriptors(repoName *string, config *config.Config) error {
 		return err
 	}
 
+	certificateProdYaml, err := k8s.BuildCertificateProdYaml(config)
+	if err != nil {
+		return err
+	}
+
+	gatewayProdYaml, err := k8s.BuildGatewayProdYaml(config)
+	if err != nil {
+		return err
+	}
+
+	virtualServiceProdYaml, err := k8s.BuildVirtualServiceProdYaml(config)
+	if err != nil {
+		return err
+	}
+
 	files := github_api.FilesToCommit{
 		Files: []github_api.FileToCommit{
 			{
@@ -156,6 +171,18 @@ func commitK8sDescriptors(repoName *string, config *config.Config) error {
 			{
 				FilePath: "overlays/production/deployment-secrets.yaml",
 				Content:  secretsProdYaml,
+			},
+			{
+				FilePath: "overlays/production/certificate.yaml",
+				Content:  certificateProdYaml,
+			},
+			{
+				FilePath: "overlays/production/gateway.yaml",
+				Content:  gatewayProdYaml,
+			},
+			{
+				FilePath: "overlays/production/virtual-service.yaml",
+				Content:  virtualServiceProdYaml,
 			},
 		},
 	}

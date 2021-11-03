@@ -26,8 +26,8 @@ spec:
       containers:
       - name: {{.Name}}
         image: {{.Image}}:latest
-	  imagePullSecrets:
-	  - name: evilmeow-registry-secret
+      imagePullSecrets:
+      - name: evilmeow-registry-secret
 `
 
 	t, err := template.New("deployment").Parse(templateText)

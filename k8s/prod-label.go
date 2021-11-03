@@ -6,23 +6,22 @@ import (
 	"html/template"
 )
 
-func BuildKustomizeProdYaml(config *config.Config) (string, error) {
+func BuildLabelProdYaml(config *config.Config) (string, error) {
 
 	templateText := `---
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	name: {{.Name}}
+spec:
+	selector:
+	matchLabels:
+		env: production
+	template:
+	metadata:
+		labels:
+		env: production
 
-bases:
-- ../../base
-
-nameSuffix: -prod
-
-resources:
-- certificate.yaml
-
-patchesStrategicMerge:
-- deployment-label.yaml
-- deployment-secrets.yaml
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

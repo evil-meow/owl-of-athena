@@ -6,23 +6,24 @@ import (
 	"html/template"
 )
 
-func BuildKustomizeProdYaml(config *config.Config) (string, error) {
+func BuildVirtualServiceProdYaml(config *config.Config) (string, error) {
 
 	templateText := `---
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-bases:
-- ../../base
-
-nameSuffix: -prod
-
-resources:
-- certificate.yaml
-
-patchesStrategicMerge:
-- deployment-label.yaml
-- deployment-secrets.yaml
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+	name: {{.Name}}
+	namespace: {{.Name}}
+spec:
+	gateways:
+	- {{.Name}}-gateway
+	hosts:
+	- {{.Url}}
+	http:
+	- match:
+		route:
+		- destination:
+			host: {{.Name}}
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
