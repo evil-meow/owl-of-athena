@@ -20,7 +20,7 @@ spec:
   source:
   repoURL: https://github.com/evilmeow/{{.RepoName}}
   targetRevision: HEAD
-  path: .
+  path: kustomize
 
   kustomize:
     version: v3.5.4

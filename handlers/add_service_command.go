@@ -108,7 +108,7 @@ func commitReadme(repoName *string) error {
 		Files: []github_api.FileToCommit{
 			{
 				FilePath: "README.md",
-				Content:  "Repo created by owl-of-athena",
+				Content:  "Repo created by owl-of-athena\nYou have a kustomize folder to use with kustomize and an argoCD application CRD.",
 			},
 		},
 	}
@@ -162,35 +162,35 @@ func commitK8sDescriptors(repoName *string, config *config.Config) error {
 	files := github_api.FilesToCommit{
 		Files: []github_api.FileToCommit{
 			{
-				FilePath: "base/deployment.yaml",
+				FilePath: "kustomize/base/deployment.yaml",
 				Content:  deploymentYaml,
 			},
 			{
-				FilePath: "base/namespace.yaml",
+				FilePath: "kustomize/base/namespace.yaml",
 				Content:  namespaceYaml,
 			},
 			{
-				FilePath: "base/kustomize.yaml",
+				FilePath: "kustomize/base/kustomize.yaml",
 				Content:  kustomizeYaml,
 			},
 			{
-				FilePath: "overlays/production/kustomize.yaml",
+				FilePath: "kustomize/overlays/production/kustomize.yaml",
 				Content:  kustomizeProdYaml,
 			},
 			{
-				FilePath: "overlays/production/deployment-secrets.yaml",
+				FilePath: "kustomize/overlays/production/deployment-secrets.yaml",
 				Content:  secretsProdYaml,
 			},
 			{
-				FilePath: "overlays/production/certificate.yaml",
+				FilePath: "kustomize/overlays/production/certificate.yaml",
 				Content:  certificateProdYaml,
 			},
 			{
-				FilePath: "overlays/production/gateway.yaml",
+				FilePath: "kustomize/overlays/production/gateway.yaml",
 				Content:  gatewayProdYaml,
 			},
 			{
-				FilePath: "overlays/production/virtual-service.yaml",
+				FilePath: "kustomize/overlays/production/virtual-service.yaml",
 				Content:  virtualServiceProdYaml,
 			},
 		},
