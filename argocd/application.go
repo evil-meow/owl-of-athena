@@ -18,15 +18,12 @@ spec:
   project: default
 
   source:
-  repoURL: https://github.com/evilmeow/{{.RepoName}}
-  targetRevision: HEAD
-  path: kustomize
+    repoURL: https://github.com/evilmeow/{{.RepoName}}
+    targetRevision: HEAD
+    path: kustomize
 
-  kustomize:
-    version: v3.5.4
-
-  directory:
-    recurse: true
+    directory:
+      recurse: true
 
   destination:
     server: https://kubernetes.default.svc
@@ -37,17 +34,18 @@ spec:
       prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
       selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
       allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
-  syncOptions:     # Sync options which modifies sync behavior
-  - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
-  - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
-  - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation
 
-  retry:
-    limit: 5 # number of failed sync attempt retries; unlimited number of attempts if less than 0
-    backoff:
-      duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
-      factor: 2 # a factor to multiply the base duration after each failed retry
-      maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
+    syncOptions:     # Sync options which modifies sync behavior
+    - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation
+
+    retry:
+      limit: 5 # number of failed sync attempt retries; unlimited number of attempts if less than 0
+      backoff:
+        duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
+        factor: 2 # a factor to multiply the base duration after each failed retry
+        maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
