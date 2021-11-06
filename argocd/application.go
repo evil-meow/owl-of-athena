@@ -18,7 +18,7 @@ spec:
   project: default
 
   source:
-    repoURL: git@github.com:evil-meow/{{.RepoName}}
+    repoURL: git@github.com:evil-meow/{{.RepoName}}.git
     targetRevision: HEAD
     path: kustomize/overlays/production
 
