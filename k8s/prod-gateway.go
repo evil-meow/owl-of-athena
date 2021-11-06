@@ -12,29 +12,29 @@ func BuildGatewayProdYaml(config *config.Config) (string, error) {
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-	name: {{.Name}}-gateway
-	namespace: {{.Name}}
+  name: {{.Name}}-gateway
+  namespace: {{.Name}}
 spec:
-	selector:
-	istio: ingressgateway
-	servers:
-	- hosts:
-		- {{.Url}}
-		port:
-		name: https
-		number: 443
-		protocol: HTTPS
-		tls:
-		mode: SIMPLE
-		credentialName: {{.Url}}-cert
-	- hosts:
-		- {{.Url}}
-		port:
-		name: http
-		number: 80
-		protocol: HTTP
-		tls:
-		httpsRedirect: true
+  selector:
+  istio: ingressgateway
+  servers:
+  - hosts:
+    - {{.Url}}
+    port:
+    name: https
+    number: 443
+    protocol: HTTPS
+    tls:
+    mode: SIMPLE
+    credentialName: {{.Url}}-cert
+  - hosts:
+    - {{.Url}}
+    port:
+    name: http
+    number: 80
+    protocol: HTTP
+    tls:
+    httpsRedirect: true
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

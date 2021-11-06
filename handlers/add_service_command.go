@@ -98,7 +98,7 @@ func readConfigFile(serviceName *string) (*config.Config, error) {
 	conf := config.Config{}
 
 	yaml.Unmarshal([]byte(configFile), &conf)
-	conf.RepoName = *serviceName
+	conf.RepoName = *serviceName + "-infra"
 
 	return &conf, nil
 }

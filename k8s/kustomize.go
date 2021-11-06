@@ -15,8 +15,8 @@ kind: Kustomization
 namespace: {{.Name}}
 
 resources:
-	- namespace.yaml
-	- deployment.yaml
+  - namespace.yaml
+  - deployment.yaml
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

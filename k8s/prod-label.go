@@ -12,16 +12,15 @@ func BuildLabelProdYaml(config *config.Config) (string, error) {
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-	name: {{.Name}}
+  name: {{.Name}}
 spec:
-	selector:
-	matchLabels:
-		env: production
-	template:
-	metadata:
-		labels:
-		env: production
-
+  selector:
+  matchLabels:
+    env: production
+  template:
+  metadata:
+    labels:
+    env: production
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

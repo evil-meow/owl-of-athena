@@ -12,16 +12,16 @@ func BuildCertificateProdYaml(config *config.Config) (string, error) {
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-	name: {{.Url}}-cert
-	namespace: istio-system
+  name: {{.Url}}-cert
+  namespace: istio-system
 spec:
-	commonName: {{.Url}}
-	secretName: {{.Url}}-cert
-	dnsNames:
-	- {{.Url}}
-	issuerRef:
-	name: letsencrypt-production
-	kind: ClusterIssuer
+  commonName: {{.Url}}
+  secretName: {{.Url}}-cert
+  dnsNames:
+  - {{.Url}}
+  issuerRef:
+  name: letsencrypt-production
+  kind: ClusterIssuer
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

@@ -12,9 +12,9 @@ func BuildNamespaceYaml(config *config.Config) (string, error) {
 apiVersion: v1
 kind: Namespace
 metadata:
-	name: {{.Name}}
-	labels:
-	istio-injection: enabled
+  name: {{.Name}}
+  labels:
+  istio-injection: enabled
 `
 
 	t, err := template.New("namespace").Parse(templateText)

@@ -12,15 +12,15 @@ func BuildSecretsProdYaml(config *config.Config) (string, error) {
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-	name: {{.Name}}
+  name: {{.Name}}
 spec:
-	template:
-	spec:
-		containers:
-		- name: {{.Name}}
-		envFrom:
-		- secretRef:
-			name: {{.Name}}-production-secrets
+  template:
+  spec:
+    containers:
+    - name: {{.Name}}
+    envFrom:
+    - secretRef:
+      name: {{.Name}}-production-secrets
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

@@ -18,7 +18,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/evilmeow/{{.RepoName}}
+    repoURL: git@github.com:evil-meow/{{.RepoName}}
     targetRevision: HEAD
     path: kustomize
 

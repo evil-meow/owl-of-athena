@@ -12,18 +12,18 @@ func BuildVirtualServiceProdYaml(config *config.Config) (string, error) {
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-	name: {{.Name}}
-	namespace: {{.Name}}
+  name: {{.Name}}
+  namespace: {{.Name}}
 spec:
-	gateways:
-	- {{.Name}}-gateway
-	hosts:
-	- {{.Url}}
-	http:
-	- match:
-		route:
-		- destination:
-			host: {{.Name}}
+  gateways:
+  - {{.Name}}-gateway
+  hosts:
+  - {{.Url}}
+  http:
+  - match:
+    route:
+    - destination:
+      host: {{.Name}}
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
