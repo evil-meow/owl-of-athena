@@ -26,14 +26,14 @@ spec:
       tls:
         mode: SIMPLE
         credentialName: {{.Url}}-cert
-  - hosts:
-      - {{.Url}}
-    port:
-      name: http
-      number: 80
-      protocol: HTTP
-    tls:
-      httpsRedirect: true
+    - hosts:
+        - {{.Url}}
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+      tls:
+        httpsRedirect: true
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
