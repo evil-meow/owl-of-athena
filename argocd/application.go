@@ -20,7 +20,7 @@ spec:
   source:
     repoURL: git@github.com:evil-meow/{{.RepoName}}
     targetRevision: HEAD
-    path: kustomize
+    path: kustomize/overlays
 
     directory:
       recurse: true
