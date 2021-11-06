@@ -20,10 +20,7 @@ spec:
   source:
     repoURL: git@github.com:evil-meow/{{.RepoName}}
     targetRevision: HEAD
-    path: kustomize/overlays
-
-    directory:
-      recurse: true
+    path: kustomize/overlays/production
 
   destination:
     server: https://kubernetes.default.svc
