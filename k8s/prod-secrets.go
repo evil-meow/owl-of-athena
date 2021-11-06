@@ -15,12 +15,12 @@ metadata:
   name: {{.Name}}
 spec:
   template:
-  spec:
-    containers:
-    - name: {{.Name}}
-    envFrom:
-    - secretRef:
-      name: {{.Name}}-production-secrets
+    spec:
+      containers:
+      - name: {{.Name}}
+        envFrom:
+        - secretRef:
+            name: {{.Name}}-production-secrets
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

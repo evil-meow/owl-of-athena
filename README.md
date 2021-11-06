@@ -44,14 +44,20 @@ GITHUB_TOKEN
 ### v0.2
 
 - [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
+- [ ] Create a single file per folder in kustomization so we can easily remove things
 
 ### v0.3
 
 - [ ] Notify failed deployments in Slack
 - [ ] Notify failed builds in Slack
 
+### v0.4
+
+- [ ] Watch owl.yaml for changes and update the descriptors
+
 ### v1.0
 
+- [ ] Catalog of services in database
 - [ ] API to create new services from owlgithub.com
 - [ ] Create Sentry entry
 - [ ] Push dashboards to grafana

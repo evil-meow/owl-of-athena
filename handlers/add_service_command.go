@@ -154,6 +154,11 @@ func commitK8sDescriptors(repoName *string, config *config.Config) error {
 		return err
 	}
 
+	labelProdYaml, err := k8s.BuildLabelProdYaml(config)
+	if err != nil {
+		return err
+	}
+
 	virtualServiceProdYaml, err := k8s.BuildVirtualServiceProdYaml(config)
 	if err != nil {
 		return err
@@ -170,24 +175,28 @@ func commitK8sDescriptors(repoName *string, config *config.Config) error {
 				Content:  namespaceYaml,
 			},
 			{
-				FilePath: "kustomize/base/kustomize.yaml",
+				FilePath: "kustomize/base/kustomization.yaml",
 				Content:  kustomizeYaml,
 			},
 			{
-				FilePath: "kustomize/overlays/production/kustomize.yaml",
+				FilePath: "kustomize/overlays/production/kustomization.yaml",
 				Content:  kustomizeProdYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/deployment-secrets.yaml",
-				Content:  secretsProdYaml,
 			},
 			{
 				FilePath: "kustomize/overlays/production/certificate.yaml",
 				Content:  certificateProdYaml,
 			},
 			{
+				FilePath: "kustomize/overlays/production/deployment-secrets.yaml",
+				Content:  secretsProdYaml,
+			},
+			{
 				FilePath: "kustomize/overlays/production/gateway.yaml",
 				Content:  gatewayProdYaml,
+			},
+			{
+				FilePath: "kustomize/overlays/production/deployment-label.yaml",
+				Content:  labelProdYaml,
 			},
 			{
 				FilePath: "kustomize/overlays/production/virtual-service.yaml",

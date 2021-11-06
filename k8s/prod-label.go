@@ -15,12 +15,12 @@ metadata:
   name: {{.Name}}
 spec:
   selector:
-  matchLabels:
-    env: production
+    matchLabels:
+      env: production
   template:
-  metadata:
-    labels:
-    env: production
+    metadata:
+      labels:
+        env: production
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

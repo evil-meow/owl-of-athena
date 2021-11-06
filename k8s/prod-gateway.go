@@ -13,28 +13,27 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: {{.Name}}-gateway
-  namespace: {{.Name}}
 spec:
   selector:
-  istio: ingressgateway
+    istio: ingressgateway
   servers:
+    - hosts:
+      - {{.Url}}
+      port:
+        name: https
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: {{.Url}}-cert
   - hosts:
-    - {{.Url}}
+      - {{.Url}}
     port:
-    name: https
-    number: 443
-    protocol: HTTPS
+      name: http
+      number: 80
+      protocol: HTTP
     tls:
-    mode: SIMPLE
-    credentialName: {{.Url}}-cert
-  - hosts:
-    - {{.Url}}
-    port:
-    name: http
-    number: 80
-    protocol: HTTP
-    tls:
-    httpsRedirect: true
+      httpsRedirect: true
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

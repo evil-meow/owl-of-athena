@@ -14,7 +14,7 @@ kind: Namespace
 metadata:
   name: {{.Name}}
   labels:
-  istio-injection: enabled
+    istio-injection: enabled
 `
 
 	t, err := template.New("namespace").Parse(templateText)

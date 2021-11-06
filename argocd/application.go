@@ -48,12 +48,12 @@ spec:
         maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
 `
 
-	t, err := template.New("kustomize").Parse(templateText)
+	t, err := template.New("kustomization").Parse(templateText)
 	if err != nil {
 		panic(err)
 	}
 
 	buf := &bytes.Buffer{}
-	err = t.ExecuteTemplate(buf, "kustomize", config)
+	err = t.ExecuteTemplate(buf, "kustomization", config)
 	return buf.String(), err
 }

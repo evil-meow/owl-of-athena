@@ -16,14 +16,14 @@ metadata:
   namespace: {{.Name}}
 spec:
   gateways:
-  - {{.Name}}-gateway
+    - {{.Name}}-gateway
   hosts:
-  - {{.Url}}
+    - {{.Url}}
   http:
-  - match:
-    route:
-    - destination:
-      host: {{.Name}}
+    - match:
+      route:
+        - destination:
+            host: {{.Name}}
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

@@ -18,10 +18,10 @@ spec:
   commonName: {{.Url}}
   secretName: {{.Url}}-cert
   dnsNames:
-  - {{.Url}}
+    - {{.Url}}
   issuerRef:
-  name: letsencrypt-production
-  kind: ClusterIssuer
+    name: letsencrypt-production
+    kind: ClusterIssuer
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

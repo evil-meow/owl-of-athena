@@ -19,18 +19,20 @@ nameSuffix: -prod
 
 resources:
 - certificate.yaml
+- gateway.yaml
+- virtual-service.yaml
 
 patchesStrategicMerge:
 - deployment-label.yaml
 - deployment-secrets.yaml
 `
 
-	t, err := template.New("kustomize").Parse(templateText)
+	t, err := template.New("kustomization").Parse(templateText)
 	if err != nil {
 		panic(err)
 	}
 
 	buf := &bytes.Buffer{}
-	err = t.ExecuteTemplate(buf, "kustomize", config)
+	err = t.ExecuteTemplate(buf, "kustomization", config)
 	return buf.String(), err
 }
