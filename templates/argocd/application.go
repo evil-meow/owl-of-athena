@@ -2,11 +2,11 @@ package argocd
 
 import (
 	"bytes"
-	"evil-meow/owl-of-athena/config"
+	"evil-meow/owl-of-athena/service_config"
 	"html/template"
 )
 
-func BuildApplicationYaml(config *config.Config) (string, error) {
+func BuildApplicationYaml(config *service_config.ServiceConfig) (string, error) {
 
 	templateText := `---
 apiVersion: argoproj.io/v1alpha1

@@ -2,11 +2,11 @@ package k8s
 
 import (
 	"bytes"
-	"evil-meow/owl-of-athena/config"
+	"evil-meow/owl-of-athena/service_config"
 	"html/template"
 )
 
-func BuildKustomizeYaml(config *config.Config) (string, error) {
+func BuildKustomizeYaml(config *service_config.ServiceConfig) (string, error) {
 
 	templateText := `---
 apiVersion: kustomize.config.k8s.io/v1beta1

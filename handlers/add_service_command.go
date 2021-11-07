@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"errors"
-	"evil-meow/owl-of-athena/config"
 	"evil-meow/owl-of-athena/github_api"
 	"evil-meow/owl-of-athena/k8s_api"
+	"evil-meow/owl-of-athena/service_config"
 	"evil-meow/owl-of-athena/templates/argocd"
 	"evil-meow/owl-of-athena/templates/k8s"
 	"fmt"
@@ -52,13 +52,13 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return err
 	}
 
-	err = commitK8sDescriptors(&infraRepoName, config)
+	err = commitK8sDescriptors(config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit k8s descriptors to the infra repo")
 		return err
 	}
 
-	err = commitArgocd(&infraRepoName, config)
+	err = commitArgocd(config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit argocd descriptor")
 		return err
@@ -92,7 +92,7 @@ func sendMessage(client *slack.Client, channelID *string, serviceName *string, t
 	}
 }
 
-func readConfigFile(serviceName *string) (*config.Config, error) {
+func readConfigFile(serviceName *string) (*service_config.ServiceConfig, error) {
 	configFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/main/owl.yml", *serviceName)
 	configFile, err := github_api.ReadFile(&configFileUrl)
 	if err != nil {
@@ -102,7 +102,7 @@ func readConfigFile(serviceName *string) (*config.Config, error) {
 
 	log.Printf("owl.yml found. Contents:\n%s", configFile)
 
-	conf := config.Config{}
+	conf := service_config.ServiceConfig{}
 
 	yaml.Unmarshal([]byte(configFile), &conf)
 	conf.RepoName = *serviceName + "-infra"
@@ -125,7 +125,7 @@ func commitReadme(repoName *string) error {
 	return err
 }
 
-func commitK8sDescriptors(repoName *string, config *config.Config) error {
+func commitK8sDescriptors(config *service_config.ServiceConfig) error {
 	deploymentYaml, err := k8s.BuildDeploymentYaml(config)
 	if err != nil {
 		return err
@@ -212,12 +212,12 @@ func commitK8sDescriptors(repoName *string, config *config.Config) error {
 		},
 	}
 
-	err = github_api.CommitFilesToMain(repoName, files)
+	err = github_api.CommitFilesToMain(&config.RepoName, files)
 
 	return err
 }
 
-func commitArgocd(repoName *string, config *config.Config) error {
+func commitArgocd(config *service_config.ServiceConfig) error {
 	argoYaml, err := argocd.BuildApplicationYaml(config)
 	if err != nil {
 		return err
@@ -232,12 +232,12 @@ func commitArgocd(repoName *string, config *config.Config) error {
 		},
 	}
 
-	err = github_api.CommitFilesToMain(repoName, files)
+	err = github_api.CommitFilesToMain(&config.RepoName, files)
 
 	return err
 }
 
-func applyArgocd(config *config.Config) error {
+func applyArgocd(config *service_config.ServiceConfig) error {
 	err := k8s_api.Apply("https://github.com/evil-meow/" + config.RepoName + "/argocd.yaml")
 	return err
 }

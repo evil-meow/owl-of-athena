@@ -1,6 +1,6 @@
-package config
+package service_config
 
-type Config struct {
+type ServiceConfig struct {
 	RepoName string
 	Version  string `yaml:"version"`
 	Name     string `yaml:"name"`

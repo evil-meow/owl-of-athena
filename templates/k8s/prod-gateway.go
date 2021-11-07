@@ -2,11 +2,11 @@ package k8s
 
 import (
 	"bytes"
-	"evil-meow/owl-of-athena/config"
+	"evil-meow/owl-of-athena/service_config"
 	"html/template"
 )
 
-func BuildGatewayProdYaml(config *config.Config) (string, error) {
+func BuildGatewayProdYaml(config *service_config.ServiceConfig) (string, error) {
 
 	templateText := `---
 apiVersion: networking.istio.io/v1beta1

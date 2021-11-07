@@ -2,11 +2,11 @@ package k8s
 
 import (
 	"bytes"
-	"evil-meow/owl-of-athena/config"
+	"evil-meow/owl-of-athena/service_config"
 	"html/template"
 )
 
-func BuildCertificateProdYaml(config *config.Config) (string, error) {
+func BuildCertificateProdYaml(config *service_config.ServiceConfig) (string, error) {
 
 	templateText := `---
 apiVersion: cert-manager.io/v1
