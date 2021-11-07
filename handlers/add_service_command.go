@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"errors"
-	"evil-meow/owl-of-athena/argocd"
 	"evil-meow/owl-of-athena/config"
 	"evil-meow/owl-of-athena/github_api"
-	"evil-meow/owl-of-athena/k8s"
+	"evil-meow/owl-of-athena/templates/argocd"
+	"evil-meow/owl-of-athena/templates/k8s"
 	"fmt"
 	"log"
 
