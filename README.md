@@ -43,6 +43,7 @@ GITHUB_TOKEN
 
 ### v0.2
 
+- [ ] Validate service name since it cannot contain dashes or dots
 - [ ] Creating argo apps that allow to deploy to different environments
 - [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
 - [ ] Create a single file per folder in kustomization so we can easily remove things
