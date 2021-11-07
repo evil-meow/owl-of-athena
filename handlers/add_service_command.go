@@ -100,8 +100,6 @@ func readConfigFile(serviceName *string) (*service_config.ServiceConfig, error) 
 		return nil, errors.New("owl.yml file not found")
 	}
 
-	log.Printf("owl.yml found. Contents:\n%s", configFile)
-
 	conf := service_config.ServiceConfig{}
 
 	yaml.Unmarshal([]byte(configFile), &conf)
