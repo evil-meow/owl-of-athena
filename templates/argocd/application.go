@@ -15,8 +15,8 @@ metadata:
   name: {{.Name}}
   namespace: argocd
   annotations:
-	  argocd-image-updater.argoproj.io/image-list: '{{.Name}}=rg.fr-par.scw.cloud/evilmeow/{{.Name}}'
-	  argocd-image-updater.argoproj.io/owl-of-athena.update-strategy: latest
+    argocd-image-updater.argoproj.io/image-list: '{{.Name}}=rg.fr-par.scw.cloud/evilmeow/{{.Name}}'
+    argocd-image-updater.argoproj.io/owl-of-athena.update-strategy: latest
 
 spec:
   project: default
