@@ -4,6 +4,7 @@ import (
 	"errors"
 	"evil-meow/owl-of-athena/config"
 	"evil-meow/owl-of-athena/github_api"
+	"evil-meow/owl-of-athena/k8s_api"
 	"evil-meow/owl-of-athena/templates/argocd"
 	"evil-meow/owl-of-athena/templates/k8s"
 	"fmt"
@@ -60,6 +61,12 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 	err = commitArgocd(&infraRepoName, config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit argocd descriptor")
+		return err
+	}
+
+	err = applyArgocd(config)
+	if err != nil {
+		sendMessage(client, channelID, serviceName, "Could not apply argocd descriptor")
 		return err
 	}
 
@@ -227,5 +234,10 @@ func commitArgocd(repoName *string, config *config.Config) error {
 
 	err = github_api.CommitFilesToMain(repoName, files)
 
+	return err
+}
+
+func applyArgocd(config *config.Config) error {
+	err := k8s_api.Apply("https://github.com/evil-meow/" + config.RepoName + "/argocd.yaml")
 	return err
 }
