@@ -6,17 +6,21 @@ import (
 	"html/template"
 )
 
-func BuildSecretsProdYaml(config *service_config.ServiceConfig) (string, error) {
+func BuildDeploymentSecretsProdYaml(config *service_config.ServiceConfig) (string, error) {
 
 	templateText := `---
-	apiVersion: v1
-	kind: Secret
-	metadata:
-	  name: {{.Name}}-production-secrets
-	type: Opaque
-	stringData:
-	  config.yaml: |-
-		sample: value
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Name}}
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{.Name}}
+        envFrom:
+        - secretRef:
+            name: {{.Name}}-production-secrets
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

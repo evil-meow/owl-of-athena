@@ -144,6 +144,11 @@ func commitK8sDescriptors(config *service_config.ServiceConfig) error {
 		return err
 	}
 
+	deploymentSecretsProdYaml, err := k8s.BuildDeploymentSecretsProdYaml(config)
+	if err != nil {
+		return err
+	}
+
 	secretsProdYaml, err := k8s.BuildSecretsProdYaml(config)
 	if err != nil {
 		return err
@@ -192,8 +197,12 @@ func commitK8sDescriptors(config *service_config.ServiceConfig) error {
 				Content:  certificateProdYaml,
 			},
 			{
-				FilePath: "kustomize/overlays/production/deployment-secrets.yaml",
+				FilePath: "kustomize/overlays/production/secrets.yaml",
 				Content:  secretsProdYaml,
+			},
+			{
+				FilePath: "kustomize/overlays/production/deployment-secrets.yaml",
+				Content:  deploymentSecretsProdYaml,
 			},
 			{
 				FilePath: "kustomize/overlays/production/gateway.yaml",
