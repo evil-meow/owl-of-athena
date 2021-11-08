@@ -16,7 +16,7 @@ metadata:
   namespace: {{.Name}}
 spec:
   gateways:
-    - {{.Name}}-gateway
+    - {{.Name}}-gateway-prod
   hosts:
     - {{.Url}}
   http:
