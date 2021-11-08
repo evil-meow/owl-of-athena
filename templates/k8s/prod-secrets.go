@@ -9,14 +9,13 @@ import (
 func BuildSecretsProdYaml(config *service_config.ServiceConfig) (string, error) {
 
 	templateText := `---
-	apiVersion: v1
-	kind: Secret
-	metadata:
-	  name: {{.Name}}-production-secrets
-	type: Opaque
-	stringData:
-	  config.yaml: |-
-		sample: value
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{.Name}}-production-secrets
+type: Opaque
+data:
+  sample: value
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
