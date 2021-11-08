@@ -6,6 +6,6 @@ type ServiceConfig struct {
 	Name         string `yaml:"name"`
 	Replicas     int8   `yaml:"replicas"`
 	Image        string `yaml:"image"`
-	InternalPort int8   `yaml:"internal_port"`
+	InternalPort int16  `yaml:"internal_port"`
 	Url          string `yaml:"url"`
 }
