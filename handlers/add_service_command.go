@@ -134,6 +134,11 @@ func commitK8sDescriptors(config *service_config.ServiceConfig) error {
 		return err
 	}
 
+	serviceYaml, err := k8s.BuildServiceYaml(config)
+	if err != nil {
+		return err
+	}
+
 	kustomizeYaml, err := k8s.BuildKustomizeYaml(config)
 	if err != nil {
 		return err
@@ -187,6 +192,10 @@ func commitK8sDescriptors(config *service_config.ServiceConfig) error {
 			{
 				FilePath: "kustomize/base/kustomization.yaml",
 				Content:  kustomizeYaml,
+			},
+			{
+				FilePath: "kustomize/base/service.yaml",
+				Content:  serviceYaml,
 			},
 			{
 				FilePath: "kustomize/overlays/production/kustomization.yaml",
