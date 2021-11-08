@@ -20,7 +20,7 @@ spec:
       - name: {{.Name}}
         envFrom:
         - secretRef:
-            name: {{.Name}}-production-secrets
+            name: {{.Name}}-production-secrets-prod
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
