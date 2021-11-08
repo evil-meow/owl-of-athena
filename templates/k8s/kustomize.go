@@ -17,7 +17,6 @@ namespace: {{.Name}}
 resources:
   - namespace.yaml
   - deployment.yaml
-  - secrets.yaml
 `
 
 	t, err := template.New("kustomize").Parse(templateText)

@@ -21,6 +21,7 @@ resources:
 - certificate.yaml
 - gateway.yaml
 - virtual-service.yaml
+- secrets.yaml
 
 patchesStrategicMerge:
 - deployment-label.yaml
