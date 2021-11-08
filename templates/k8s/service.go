@@ -16,10 +16,10 @@ metadata:
 spec:
   selector:
     app: {{.Name}}
-    ports:
-    - protocol: TCP
-      port: {{.InternalPort}}
-      targetPort: {{.InternalPort}}
+  ports:
+  - protocol: TCP
+    port: {{.InternalPort}}
+    targetPort: {{.InternalPort}}
 `
 
 	t, err := template.New("namespace").Parse(templateText)
