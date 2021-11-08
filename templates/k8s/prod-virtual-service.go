@@ -23,7 +23,7 @@ spec:
     - match:
       route:
         - destination:
-            host: {{.Name}}-prod
+            host: {{.Name}}
             port:
               number: {{.InternalPort}}
 `
