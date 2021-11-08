@@ -15,7 +15,6 @@ metadata:
   name: {{.Name}}-production-secrets
 type: Opaque
 data:
-  sample: value
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
