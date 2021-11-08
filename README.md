@@ -43,6 +43,7 @@ GITHUB_TOKEN
 
 ### v0.2
 
+- [ ] Create `evilmeow-registry-secret` to download images in new namespaces
 - [ ] Validate service name since it cannot contain dashes or dots
 - [ ] Creating argo apps that allow to deploy to different environments
 - [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
