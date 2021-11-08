@@ -24,6 +24,8 @@ spec:
       route:
         - destination:
             host: {{.Name}}
+            port:
+			  number: {{.InternalPort}}
 `
 
 	t, err := template.New("kustomize").Parse(templateText)
