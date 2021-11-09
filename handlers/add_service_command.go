@@ -96,7 +96,7 @@ func readConfigFile(serviceName *string) (*service_config.ServiceConfig, error) 
 	configFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/main/owl.yml", *serviceName)
 	configFile, err := github_api.ReadFile(&configFileUrl)
 	if err != nil {
-		log.Printf("Could not find config file at: %s", configFileUrl)
+		log.Printf("Could not find owl.yml config file at: %s", configFileUrl)
 		return nil, errors.New("owl.yml file not found")
 	}
 
