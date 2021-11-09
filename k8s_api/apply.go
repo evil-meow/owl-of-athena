@@ -11,13 +11,7 @@ import (
 )
 
 func Apply(url string) error {
-	// creates the in-cluster config
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return err
-	}
-	// creates the clientset
-	clientset, err := kubernetes.NewForConfig(config)
+	clientset, err := connect()
 	if err != nil {
 		return err
 	}
@@ -32,4 +26,36 @@ func Apply(url string) error {
 
 		time.Sleep(10 * time.Second)
 	}
+}
+
+func CopySecret(sourceName string, sourceNamespace string, targetNamespace string) error {
+	clientset, err := connect()
+	if err != nil {
+		return err
+	}
+	secret, err := clientset.CoreV1().Secrets(sourceNamespace).Get(context.TODO(), sourceName, metav1.GetOptions{})
+	if err != nil {
+		return err
+	}
+
+	_, err = clientset.CoreV1().Secrets(targetNamespace).Create(context.TODO(), secret, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func connect() (*kubernetes.Clientset, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return clientset, nil
 }

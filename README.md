@@ -39,14 +39,14 @@ GITHUB_TOKEN
 - [x] Command to create a new service
 - [x] Add CI
 - [x] Auto create infra repository with base and production if not there already
-- [ ] Add this repo's infra to ArgoCD using declarative syntax
+- [x] Add this repo's infra to ArgoCD using declarative syntax
+- [ ] Create `evilmeow-registry-secret` to download images in new namespaces
+- [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
 
 ### v0.2
 
-- [ ] Create `evilmeow-registry-secret` to download images in new namespaces
 - [ ] Validate service name since it cannot contain dashes or dots
 - [ ] Creating argo apps that allow to deploy to different environments
-- [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
 - [ ] Create a single file per folder in kustomization so we can easily remove things
 
 ### v0.3

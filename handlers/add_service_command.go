@@ -58,6 +58,11 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return err
 	}
 
+	err = copyRegistrySecret(config.Name)
+	if err != nil {
+		sendMessage(client, channelID, serviceName, "Could not copy default registry secret")
+	}
+
 	err = commitArgocd(config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit argocd descriptor")
@@ -255,5 +260,10 @@ func commitArgocd(config *service_config.ServiceConfig) error {
 
 func applyArgocd(config *service_config.ServiceConfig) error {
 	err := k8s_api.Apply("https://github.com/evil-meow/" + config.RepoName + "/argocd.yaml")
+	return err
+}
+
+func copyRegistrySecret(newNamespace string) error {
+	err := k8s_api.CopySecret("evilmeow-registry-secret", "owl-of-athena", newNamespace)
 	return err
 }
