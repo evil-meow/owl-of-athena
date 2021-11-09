@@ -26,6 +26,8 @@ func CopySecret(sourceName string, sourceNamespace string, targetNamespace strin
 		return err
 	}
 
+	secret.ObjectMeta.Namespace = targetNamespace
+
 	_, err = clientset.CoreV1().Secrets(targetNamespace).Create(context.TODO(), secret, metav1.CreateOptions{})
 	if err != nil {
 		return err
