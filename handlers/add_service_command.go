@@ -61,6 +61,7 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 	err = copyRegistrySecret(config.Name)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not copy default registry secret")
+		log.Printf("Could not copy default registry secret: %v", err)
 	}
 
 	err = commitArgocd(config)
