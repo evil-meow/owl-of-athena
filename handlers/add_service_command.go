@@ -88,7 +88,7 @@ func sendMessage(client *slack.Client, channelID *string, serviceName *string, t
 
 	_, _, err := client.PostMessage(*channelID, slack.MsgOptionAttachments(attachment))
 	if err != nil {
-		log.Printf("failed to post message: %v", err)
+		log.Printf("Failed to post message: %v", err)
 	}
 }
 
@@ -113,7 +113,7 @@ func commitReadme(repoName *string) error {
 		Files: []github_api.FileToCommit{
 			{
 				FilePath: "README.md",
-				Content:  "Repo created by owl-of-athena\nYou have a kustomize folder to use with kustomize and an argoCD application CRD.",
+				Content:  "Repo created by owl-of-athena\n\nYou have a kustomize folder to use with kustomize and an argoCD application CRD.",
 			},
 		},
 	}
