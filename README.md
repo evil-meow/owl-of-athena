@@ -40,23 +40,27 @@ GITHUB_TOKEN
 - [x] Add CI
 - [x] Auto create infra repository with base and production if not there already
 - [x] Add this repo's infra to ArgoCD using declarative syntax
-- [ ] Create `evilmeow-registry-secret` to download images in new namespaces
+- [x] Create `evilmeow-registry-secret` to download images in new namespaces
 - [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
 
 ### v0.2
 
+- [ ] Wait for namespace to be created after apply to copy secret instead of a fixed number of seconds
 - [ ] Validate service name since it cannot contain dashes or dots
 - [ ] Creating argo apps that allow to deploy to different environments
 - [ ] Create a single file per folder in kustomization so we can easily remove things
 
 ### v0.3
 
+- [ ] Clean docker images periodically
+- [ ] Clean docker images on repo deletion
 - [ ] Notify failed deployments in Slack
 - [ ] Notify failed builds in Slack
 
 ### v0.4
 
 - [ ] Watch owl.yaml for changes and update the descriptors
+- [ ] Watch for merges in main and recommit the version number in github. This should remove the dependency on image-updater
 
 ### v1.0
 
