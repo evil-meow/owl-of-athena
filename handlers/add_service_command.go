@@ -71,7 +71,7 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return err
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(60 * time.Second)
 
 	err = copyRegistrySecret(config.Name)
 	if err != nil {
