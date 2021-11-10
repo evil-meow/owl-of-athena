@@ -2,22 +2,33 @@ package k8s_api
 
 import (
 	"context"
+	"log"
 
+	"github.com/pytimer/k8sutil/apply"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
 
-func Apply(url string) error {
-	_, err := connect()
+func Apply(crdContents string) error {
+
+	_, dynamicClient, discoveryClient, err := connect()
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
+
+	applyOptions := apply.NewApplyOptions(dynamicClient, discoveryClient)
+	if err := applyOptions.Apply(context.TODO(), []byte(crdContents)); err != nil {
+		log.Fatalf("apply error: %v", err)
+	}
+
 	return nil
 }
 
 func CopySecret(sourceName string, sourceNamespace string, targetNamespace string) error {
-	clientset, err := connect()
+	clientset, _, _, err := connect()
 	if err != nil {
 		return err
 	}
@@ -37,16 +48,26 @@ func CopySecret(sourceName string, sourceNamespace string, targetNamespace strin
 	return nil
 }
 
-func connect() (*kubernetes.Clientset, error) {
+func connect() (*kubernetes.Clientset, dynamic.Interface, *discovery.DiscoveryClient, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
 
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
 
-	return clientset, nil
+	dynamic, err := dynamic.NewForConfig(config)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	discoveryClient, err := discovery.NewDiscoveryClientForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return clientset, dynamic, discoveryClient, nil
 }

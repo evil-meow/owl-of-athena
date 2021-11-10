@@ -9,6 +9,7 @@ import (
 	"evil-meow/owl-of-athena/templates/k8s"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/slack-go/slack"
 	"gopkg.in/yaml.v2"
@@ -58,12 +59,6 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return err
 	}
 
-	err = copyRegistrySecret(config.Name)
-	if err != nil {
-		sendMessage(client, channelID, serviceName, "Could not copy default registry secret")
-		log.Printf("Could not copy default registry secret: %v", err)
-	}
-
 	err = commitArgocd(config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit argocd descriptor")
@@ -75,6 +70,16 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		sendMessage(client, channelID, serviceName, "Could not apply argocd descriptor")
 		return err
 	}
+
+	time.Sleep(10 * time.Second)
+
+	err = copyRegistrySecret(config.Name)
+	if err != nil {
+		sendMessage(client, channelID, serviceName, "Could not copy default registry secret")
+		log.Printf("Could not copy default registry secret: %v", err)
+	}
+
+	sendMessage(client, channelID, serviceName, "Service created!")
 
 	return nil
 }
@@ -260,7 +265,14 @@ func commitArgocd(config *service_config.ServiceConfig) error {
 }
 
 func applyArgocd(config *service_config.ServiceConfig) error {
-	err := k8s_api.Apply("https://github.com/evil-meow/" + config.RepoName + "/argocd.yaml")
+	argoFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/argocd.yaml", config.RepoName)
+	argoFileContents, err := github_api.ReadFile(&argoFileUrl)
+	if err != nil {
+		log.Printf("Could not find argocd.yaml CRD file at: %s", argoFileUrl)
+		return errors.New("argocd.yaml file not found")
+	}
+
+	err = k8s_api.Apply(argoFileContents)
 	return err
 }
 
