@@ -265,7 +265,7 @@ func commitArgocd(config *service_config.ServiceConfig) error {
 }
 
 func applyArgocd(config *service_config.ServiceConfig) error {
-	argoFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/argocd.yaml", config.RepoName)
+	argoFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/main/argocd.yaml", config.RepoName)
 	argoFileContents, err := github_api.ReadFile(&argoFileUrl)
 	if err != nil {
 		log.Printf("Could not find argocd.yaml CRD file at: %s", argoFileUrl)
