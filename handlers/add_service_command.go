@@ -4,15 +4,12 @@ import (
 	"errors"
 	"evil-meow/owl-of-athena/github_api"
 	"evil-meow/owl-of-athena/k8s_api"
-	"evil-meow/owl-of-athena/service_config"
-	"evil-meow/owl-of-athena/templates/argocd"
-	"evil-meow/owl-of-athena/templates/k8s"
+	"evil-meow/owl-of-athena/operations"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/slack-go/slack"
-	"gopkg.in/yaml.v2"
 )
 
 // handleHelloCommand will take care of /add_service submissions
@@ -32,7 +29,7 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return errors.New("base repo not found")
 	}
 
-	config, err := readConfigFile(serviceName)
+	config, err := operations.ReadConfigFile(serviceName)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
 		return err
@@ -53,19 +50,19 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 		return err
 	}
 
-	err = commitK8sDescriptors(config)
+	err = operations.CommitK8sDescriptors(config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit k8s descriptors to the infra repo")
 		return err
 	}
 
-	err = commitArgocd(config)
+	err = operations.ApplyArgocdDescriptor(config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not commit argocd descriptor")
 		return err
 	}
 
-	err = applyArgocd(config)
+	err = operations.ApplyArgocdDescriptor(config)
 	if err != nil {
 		sendMessage(client, channelID, serviceName, "Could not apply argocd descriptor")
 		return err
@@ -103,22 +100,6 @@ func sendMessage(client *slack.Client, channelID *string, serviceName *string, t
 	}
 }
 
-func readConfigFile(serviceName *string) (*service_config.ServiceConfig, error) {
-	configFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/main/owl.yml", *serviceName)
-	configFile, err := github_api.ReadFile(&configFileUrl)
-	if err != nil {
-		log.Printf("Could not find owl.yml config file at: %s", configFileUrl)
-		return nil, errors.New("owl.yml file not found")
-	}
-
-	conf := service_config.ServiceConfig{}
-
-	yaml.Unmarshal([]byte(configFile), &conf)
-	conf.RepoName = *serviceName + "-infra"
-
-	return &conf, nil
-}
-
 func commitReadme(repoName *string) error {
 	files := github_api.FilesToCommit{
 		Files: []github_api.FileToCommit{
@@ -131,148 +112,6 @@ func commitReadme(repoName *string) error {
 
 	err := github_api.CommitFilesToMain(repoName, files)
 
-	return err
-}
-
-func commitK8sDescriptors(config *service_config.ServiceConfig) error {
-	deploymentYaml, err := k8s.BuildDeploymentYaml(config)
-	if err != nil {
-		return err
-	}
-
-	namespaceYaml, err := k8s.BuildNamespaceYaml(config)
-	if err != nil {
-		return err
-	}
-
-	serviceYaml, err := k8s.BuildServiceYaml(config)
-	if err != nil {
-		return err
-	}
-
-	kustomizeYaml, err := k8s.BuildKustomizeYaml(config)
-	if err != nil {
-		return err
-	}
-
-	kustomizeProdYaml, err := k8s.BuildKustomizeProdYaml(config)
-	if err != nil {
-		return err
-	}
-
-	deploymentSecretsProdYaml, err := k8s.BuildDeploymentSecretsProdYaml(config)
-	if err != nil {
-		return err
-	}
-
-	secretsProdYaml, err := k8s.BuildSecretsProdYaml(config)
-	if err != nil {
-		return err
-	}
-
-	certificateProdYaml, err := k8s.BuildCertificateProdYaml(config)
-	if err != nil {
-		return err
-	}
-
-	gatewayProdYaml, err := k8s.BuildGatewayProdYaml(config)
-	if err != nil {
-		return err
-	}
-
-	labelProdYaml, err := k8s.BuildLabelProdYaml(config)
-	if err != nil {
-		return err
-	}
-
-	virtualServiceProdYaml, err := k8s.BuildVirtualServiceProdYaml(config)
-	if err != nil {
-		return err
-	}
-
-	files := github_api.FilesToCommit{
-		Files: []github_api.FileToCommit{
-			{
-				FilePath: "kustomize/base/deployment.yaml",
-				Content:  deploymentYaml,
-			},
-			{
-				FilePath: "kustomize/base/namespace.yaml",
-				Content:  namespaceYaml,
-			},
-			{
-				FilePath: "kustomize/base/kustomization.yaml",
-				Content:  kustomizeYaml,
-			},
-			{
-				FilePath: "kustomize/base/service.yaml",
-				Content:  serviceYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/kustomization.yaml",
-				Content:  kustomizeProdYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/certificate.yaml",
-				Content:  certificateProdYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/secrets.yaml",
-				Content:  secretsProdYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/deployment-secrets.yaml",
-				Content:  deploymentSecretsProdYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/gateway.yaml",
-				Content:  gatewayProdYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/deployment-label.yaml",
-				Content:  labelProdYaml,
-			},
-			{
-				FilePath: "kustomize/overlays/production/virtual-service.yaml",
-				Content:  virtualServiceProdYaml,
-			},
-		},
-	}
-
-	err = github_api.CommitFilesToMain(&config.RepoName, files)
-
-	return err
-}
-
-func commitArgocd(config *service_config.ServiceConfig) error {
-	argoYaml, err := argocd.BuildApplicationYaml(config)
-	if err != nil {
-		return err
-	}
-
-	files := github_api.FilesToCommit{
-		Files: []github_api.FileToCommit{
-			{
-				FilePath: "argocd.yaml",
-				Content:  argoYaml,
-			},
-		},
-	}
-
-	err = github_api.CommitFilesToMain(&config.RepoName, files)
-
-	return err
-}
-
-func applyArgocd(config *service_config.ServiceConfig) error {
-	argoFileUrl := fmt.Sprintf("https://raw.githubusercontent.com/evil-meow/%s/main/argocd.yaml", config.RepoName)
-	argoFileContents, err := github_api.ReadFile(&argoFileUrl)
-	if err != nil {
-		log.Printf("Could not find argocd.yaml CRD file at: %s", argoFileUrl)
-		return errors.New("argocd.yaml file not found")
-	}
-
-	err = k8s_api.Apply(argoFileContents)
 	return err
 }
 
