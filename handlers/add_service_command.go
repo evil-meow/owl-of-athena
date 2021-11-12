@@ -31,7 +31,7 @@ func HandleAddServiceCommand(command slack.SlashCommand, client *slack.Client) e
 
 	config, err := operations.ReadConfigFile(serviceName)
 	if err != nil {
-		sendMessage(client, channelID, serviceName, "Could not find owl.yml at the root of the repo. Please, create it in order to add the service.")
+		sendMessage(client, channelID, serviceName, fmt.Sprintf("Could not read owl.yml at the root ofthe repo: %v", err))
 		return err
 	}
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"evil-meow/owl-of-athena/github_api"
 	"evil-meow/owl-of-athena/service_config"
+	"evil-meow/owl-of-athena/validation"
 	"fmt"
 	"log"
 
@@ -23,5 +24,18 @@ func ReadConfigFile(serviceName *string) (*service_config.ServiceConfig, error) 
 	yaml.Unmarshal([]byte(configFile), &conf)
 	conf.RepoName = *serviceName + "-infra"
 
+	err = validateConfig(&conf)
+	if err != nil {
+		return nil, err
+	}
+
 	return &conf, nil
+}
+
+func validateConfig(config *service_config.ServiceConfig) error {
+	if !validation.IsRFC1123(config.Name) {
+		return errors.New("invalid service name, it needs to follow RFC 1123")
+	}
+
+	return nil
 }

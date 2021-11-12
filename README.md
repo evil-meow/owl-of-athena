@@ -34,24 +34,16 @@ GITHUB_TOKEN
 
 ## Roadmap
 
-### v0.1
-
-- [x] Command to create a new service
-- [x] Add CI
-- [x] Auto create infra repository with base and production if not there already
-- [x] Add this repo's infra to ArgoCD using declarative syntax
-- [x] Create `evilmeow-registry-secret` to download images in new namespaces
-- [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
-
 ### v0.2
 
-- [ ] Wait for namespace to be created after apply to copy secret instead of a fixed number of seconds
-- [ ] Validate service name since it cannot contain dashes or dots
-- [ ] Creating argo apps that allow to deploy to different environments
+- [x] Validate service name since it cannot contain dashes or dots
 - [ ] Create a single file per folder in kustomization so we can easily remove things
+- [ ] Auto add EVILMEOW_REGISTRY_TOKEN repository secret to Github
+- [ ] Wait for namespace to be created after apply to copy secret instead of a fixed number of seconds
 
 ### v0.3
 
+- [ ] Creating argo apps that allow to deploy to different environments
 - [ ] Clean docker images periodically
 - [ ] Clean docker images on repo deletion
 - [ ] Notify failed deployments in Slack
